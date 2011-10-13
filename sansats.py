@@ -26,5 +26,13 @@ def user_timeline(username):
             return 'rate limiting!'
     return render_template('user_timeline.html', tweets=tweets)
 
+
+def is_relevant_to_my_interests(tweet_text, following=None):
+    if tweet_text[0] != '@':
+        return True
+    elif following and tweet_text[1:].split() and tweet_text[1:].split()[0].lower() in following:
+        return True
+    return False
+
 if __name__ == '__main__':
     app.run(debug=True)
