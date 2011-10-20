@@ -3,7 +3,7 @@
 <ul id="timeline">
 {% for tweet in tweets %}
   <li>
-    {{tweet.text|urlize}}
+    {{tweet.text|urlize|urlize_ats}}
     <br/><span class="permalink">-- <a href="">{{tweet.created_at|format_tweet_time}}</a></span>
   </li>
 {% endfor %}

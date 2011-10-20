@@ -1,7 +1,9 @@
 import datetime
+import re
 import tweepy
 
-from flask import abort, Flask, render_template
+from flask import abort, Flask, Markup, render_template, request
+from functools import partial
 
 app = Flask(__name__)
 
@@ -50,7 +52,27 @@ def format_tweet_time(tweet_time):
     # hard coding to eastern dst for now
     return (tweet_time-datetime.timedelta(hours=4)).strftime('%B %d, %Y, %I:%M %p')
 
+# This was taken from readmindme and modified to link to the current site instead of twitter.
+# http://code.google.com/p/readmindme/
+# readmindme.templatetags.tags
+AT_RE = re.compile(r'(?P<prefix>(?:\W|^)@)(?P<username>[a-zA-Z0-9_]+)\b')
+def user_page_link(host):
+    link_sub_strings = ['%(prefix)s<a href="http://', host, '/%(username)s">%(username)s</a>']
+    return ''.join(link_sub_strings)
+def _SubAtReply(match, host):
+    return user_page_link(host) % match.groupdict()
+
+def urlize_ats(value):
+    '''
+    Link @ mentions to that user's page on the site.
+    '''
+    if isinstance(value, Markup):
+        value = value.unescape()
+    host = request.host
+    return Markup(AT_RE.sub(partial(_SubAtReply, host=host), value))
+
 app.jinja_env.filters['format_tweet_time'] = format_tweet_time
+app.jinja_env.filters['urlize_ats'] = urlize_ats
 
 if __name__ == '__main__':
     app.run(debug=True)
