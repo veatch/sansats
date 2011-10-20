@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<ul>
+<ul id="timeline">
 {% for tweet in tweets %}
-  <li>{{tweet.text|urlize}}</li>
+  <li>
+    {{tweet.text|urlize}}
+    <br/><span class="permalink">-- <a href="">{{tweet.created_at|format_tweet_time}}</a></span>
+  </li>
 {% endfor %}
 </ul>
 {% endblock %}
