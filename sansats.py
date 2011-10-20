@@ -18,6 +18,15 @@ def homepage():
 def favicon():
     return abort(404)
 
+def handle_rts(tweet):
+    '''
+    If tweet is a retweet, set tweet.text using "RT @username: original tweet" format.
+    We do this because otherwise retweets near 140 character limit will be truncated.
+    '''
+    if hasattr(tweet, 'retweeted_status'):
+        tweet.text = 'RT @%s: %s' % (tweet.retweeted_status.user.screen_name, tweet.retweeted_status.text)
+    return tweet
+
 @app.route('/<username>/')
 def user_timeline(username):
     try:
@@ -26,7 +35,7 @@ def user_timeline(username):
         if e.response.status == 400:
             return 'rate limiting!'
     else:
-        tweets = [tweet for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
+        tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
         return render_template('user_timeline.html', tweets=tweets)
 
 
