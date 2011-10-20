@@ -25,7 +25,9 @@ def user_timeline(username):
     except tweepy.TweepError, e:
         if e.response.status == 400:
             return 'rate limiting!'
-    return render_template('user_timeline.html', tweets=tweets)
+    else:
+        tweets = [tweet for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
+        return render_template('user_timeline.html', tweets=tweets)
 
 
 def is_relevant_to_my_interests(tweet_text, following=None):
