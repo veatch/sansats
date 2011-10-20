@@ -4,7 +4,7 @@
 {% for tweet in tweets %}
   <li>
     {{tweet.text|urlize|urlize_ats}}
-    <br/><span class="permalink">-- <a href="">{{tweet.created_at|format_tweet_time}}</a></span>
+    <br/><span class="permalink">-- <a href="http://twitter.com/{{tweet.user.screen_name}}/status/{{tweet.id}}">{{tweet.created_at|format_tweet_time}}</a></span>
   </li>
 {% endfor %}
 </ul>
