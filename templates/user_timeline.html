@@ -9,4 +9,14 @@
   </li>
 {% endfor %}
 </ul>
+{% if status != 200 %}
+	{% if status == 400 %}
+	Twitter may be down. Try again in a bit.
+	{% else %}
+	{% if status == 401 %}
+	Looks like @{{username}}'s tweets are protected.
+	{% else %}
+	Something is broken.
+	{% endif %}{% endif %}
+{% endif %}
 {% endblock %}

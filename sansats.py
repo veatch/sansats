@@ -33,15 +33,15 @@ def handle_rts(tweet):
 
 @app.route('/<username>/')
 def user_timeline(username):
+    tweets = []
+    status = 200
     try:
         tweets = api.user_timeline(username, count=40, include_rts=True)
     except tweepy.TweepError, e:
-        if e.response.status == 400:
-            return 'rate limiting!'
+        status = e.response.status
     else:
         tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
-        return render_template('user_timeline.html', username=username.lower(), tweets=tweets)
-
+    return render_template('user_timeline.html', username=username.lower(), tweets=tweets, status=status)
 
 
 def is_relevant_to_my_interests(tweet_text, following=None):
