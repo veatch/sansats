@@ -5,12 +5,25 @@
 	<title>sansats.com</title>
 	<style type="text/css">
 		a{color:black;}
+		body{font-family:'Garamond', 'Georgia', serif; font-size:19px;}
 		div.content{width:540px; margin:40px auto;}
+		h1{font-size:240%; margin-bottom:0;}
+		h2{font-size:30px; margin-left:30px;}
+		p.subtitle{margin-top:0;}
+		p.form_text{margin-left:30px; margin-bottom:0;}
+		p.footer{text-align:right; font-size:0.8em;}
 		ul{list-style-type:none; padding:0px;}
 		#timeline li{margin:15px 0;}
 		span.permalink { font-size:0.8em; color:#666;}
 		span.permalink a { color:#666; }
 	</style>
 </head>
-<body><div class="content">{% block content %}{% endblock %}</div></body>
+<body>
+	<div class="content">
+		<h1><a href="http://sansats.com">sans @'s</a></h1>
+		<p class="subtitle">twitter streams minus replies</p>
+		{% block content %}{% endblock %}
+		<p class="footer">made by <a href="http://twitter.com/veatch">@veatch</a><br/>source on <a href="http://github.com/veatch/sansats">github</a></p>
+	</div>
+</body>
 </html>

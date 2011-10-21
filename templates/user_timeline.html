@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<h2>@{{username}}'s tweets:</h2>
 <ul id="timeline">
 {% for tweet in tweets %}
   <li>

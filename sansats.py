@@ -2,7 +2,7 @@ import datetime
 import re
 import tweepy
 
-from flask import abort, Flask, Markup, render_template, request
+from flask import abort, Flask, Markup, render_template, request, redirect
 from functools import partial
 
 app = Flask(__name__)
@@ -12,9 +12,11 @@ APP_SECRET = ''
 auth = tweepy.OAuthHandler(APP_KEY, APP_SECRET)
 api = tweepy.API(auth)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def homepage():
-    return 'hello world'
+    if request.method == 'POST':
+        return redirect('/%s' % request.form['username'].strip())
+    return render_template('index.html')
 
 @app.route('/favicon.ico')
 def favicon():
@@ -38,7 +40,8 @@ def user_timeline(username):
             return 'rate limiting!'
     else:
         tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
-        return render_template('user_timeline.html', tweets=tweets)
+        return render_template('user_timeline.html', username=username.lower(), tweets=tweets)
+
 
 
 def is_relevant_to_my_interests(tweet_text, following=None):
