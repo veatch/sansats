@@ -7,6 +7,10 @@
     {{tweet.text|urlize|urlize_ats}}
     <br/><span class="permalink">-- <a href="http://twitter.com/{{tweet.user.screen_name}}/status/{{tweet.id}}">{{tweet.created_at|format_tweet_time}}</a></span>
   </li>
+  {% if loop.last %}
+    <a href='/{{username}}/{{tweet.id}}'>next</a>
+  {% endif %}
+
 {% endfor %}
 </ul>
 {% if status != 200 %}

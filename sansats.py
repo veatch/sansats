@@ -31,18 +31,23 @@ def handle_rts(tweet):
         tweet.text = 'RT @%s: %s' % (tweet.retweeted_status.user.screen_name, tweet.retweeted_status.text)
     return tweet
 
-@app.route('/<username>/')
-def user_timeline(username):
+@app.route('/<username>/', defaults={'tweet_id':None})
+@app.route('/<username>/<int:tweet_id>')
+def user_timeline(username, tweet_id):
+
     tweets = []
     status = 200
+    if tweet_id:
+        tweet_id = int(tweet_id) - 1
     try:
-        tweets = api.user_timeline(username, count=40, include_rts=True)
+        tweets = api.user_timeline(username, count=60, include_rts=True, max_id=tweet_id)
     except tweepy.TweepError, e:
         status = e.response.status
     else:
-        tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
-    return render_template('user_timeline.html', username=username.lower(), tweets=tweets, status=status)
-
+        filtered_tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
+    if not filtered_tweets:
+        return user_timeline(username, tweets[-1].id)
+    return render_template('user_timeline.html', username=username.lower(), tweets=filtered_tweets, status=status)
 
 def is_relevant_to_my_interests(tweet_text, following=None):
     if tweet_text[0] != '@':
