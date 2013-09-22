@@ -1,4 +1,4 @@
-Flask==0.8
+Flask==0.10
 Jinja2==2.6
-Werkzeug==0.8.1
-tweepy==1.7.1
+Werkzeug==0.9
+tweepy==2.0
