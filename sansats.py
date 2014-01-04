@@ -12,13 +12,17 @@ APP_SECRET = ''
 auth = tweepy.OAuthHandler(APP_KEY, APP_SECRET)
 api = tweepy.API(auth)
 
-@app.route('/', methods=['GET', 'POST'])
+# set to empty string when serving from domain root (example.com)
+# set to 'prefix/' when serving from example.com/prefix
+APP_ROOT = 't/'
+
+@app.route('/%s' % APP_ROOT, methods=['GET', 'POST'])
 def homepage():
     if request.method == 'POST':
-        return redirect('/%s' % request.form['username'].strip())
+        return redirect('/%s%s' % (APP_ROOT, request.form['username'].strip()))
     return render_template('index.html')
 
-@app.route('/favicon.ico')
+@app.route('/%sfavicon.ico' % APP_ROOT)
 def favicon():
     return abort(404)
 
@@ -31,10 +35,11 @@ def handle_rts(tweet):
         tweet.text = 'RT @%s: %s' % (tweet.retweeted_status.user.screen_name, tweet.retweeted_status.text)
     return tweet
 
-@app.route('/<username>/', defaults={'tweet_id':None})
-@app.route('/<username>/<int:tweet_id>')
+@app.route('/%s<username>/' % APP_ROOT, defaults={'tweet_id':None})
+@app.route('/%s<username>/<int:tweet_id>' % APP_ROOT)
 def user_timeline(username, tweet_id):
 
+    filtered_tweets = []
     tweets = []
     status = 200
     if tweet_id:
@@ -45,9 +50,10 @@ def user_timeline(username, tweet_id):
         status = e.response.status
     else:
         filtered_tweets = [handle_rts(tweet) for tweet in tweets if is_relevant_to_my_interests(tweet.text)]
-    if not filtered_tweets:
+    if len(tweets) > 1 and not filtered_tweets:
         return user_timeline(username, tweets[-1].id)
-    return render_template('user_timeline.html', username=username.lower(), tweets=filtered_tweets, status=status)
+    kwargs = dict(username=username.lower(), tweets=filtered_tweets, status=status, app_root=APP_ROOT)
+    return render_template('user_timeline.html', **kwargs)
 
 def is_relevant_to_my_interests(tweet_text, following=None):
     if tweet_text[0] != '@':
