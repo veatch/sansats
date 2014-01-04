@@ -83,4 +83,4 @@ app.jinja_env.filters['format_tweet_time'] = format_tweet_time
 app.jinja_env.filters['urlize_ats'] = urlize_ats
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
